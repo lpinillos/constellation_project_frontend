@@ -36,9 +36,9 @@ body {
     --radius: 0.5rem;
   }
   .dark {
-    --background: 270 6% 7%;
+    --background: 0 0% 8%;
     --foreground: 262.1 5% 90%;
-    --card: 0 0% 8%;
+    --card: 0 0% 10%;
     --card-foreground: 262.1 5% 90%;
     --popover: 262.1 50% 5%;
     --popover-foreground: 262.1 5% 90%;
