@@ -29,7 +29,7 @@ export default function Home() {
           <CardDescription>
             Connect with your team and achieve your goals. All in Team app
           </CardDescription>
-          <Link href="#">
+          <Link href="/signin">
             <Button className="rounded-full w-full">Sign in</Button>
           </Link>
         </CardContent>
