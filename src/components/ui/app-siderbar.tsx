@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import BtnLogout from "./btn-logout";
 
 // This array is used to generate the sidebar menu items
 // TO DO: Add more items to the array to create more menu items
@@ -79,9 +80,7 @@ export function AppSidebar() {
                 <DropdownMenuItem>
                   <span>Account</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Sign out</span>
-                </DropdownMenuItem>
+                <BtnLogout />
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
