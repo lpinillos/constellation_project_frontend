@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,8 +8,17 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { usePathname } from "next/navigation";
 
 export default function AppBreadcrumb() {
+
+  const pathname = usePathname();
+  const segment = pathname.split("/").filter((segment) => segment);
+
+  function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -15,13 +26,23 @@ export default function AppBreadcrumb() {
           <BreadcrumbLink href="/">Home</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/components">Components</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-        </BreadcrumbItem>
+        
+        {
+          segment.map((segment, index) => {
+            const isLast = index === segment.length - 1;
+            const href = `/${segment}`;
+            return (
+              <BreadcrumbItem key={segment}>
+                {isLast ? (
+                  <BreadcrumbPage>{capitalizeFirstLetter(segment)}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink href={href}>{capitalizeFirstLetter(segment)}</BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            );
+          })
+        }
+
       </BreadcrumbList>
     </Breadcrumb>
   );

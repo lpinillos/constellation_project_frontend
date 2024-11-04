@@ -17,21 +17,20 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import Link from "next/link";
+import SidebarMenuLink from "./SidebarMenuLink";
 import BtnLogout from "./btn-logout";
+import Link from "next/link";
 
-// This array is used to generate the sidebar menu items
-// TO DO: Add more items to the array to create more menu items
 const items = [
   {
     title: "Dashboard",
-    url: "#",
-    icon: LayoutDashboard,
+    url: "/dashboard",
+    icon: <LayoutDashboard />,
   },
   {
     title: "Courses",
-    url: "#",
-    icon: Book,
+    url: "/courses",
+    icon: <Book />,
   },
 ];
 
@@ -52,10 +51,11 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild color="purple">
-                    <Link href={item.url} className="hover:bg-primary">
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
+                    <SidebarMenuLink
+                      url={item.url}
+                      title={item.title}
+                      icon={item.icon}
+                    />
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
