@@ -15,11 +15,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "./button";
-import { Skeleton } from "@/components/ui/skeleton"; // Importa el componente de skeleton
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function DashboardCarousel() {
   const [courses, setCourses] = useState<ICourse[]>([]);
-  const [loading, setLoading] = useState(true); // Estado de carga
+  const [loading, setLoading] = useState(true);
   const { user } = useCurrentUser();
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export function DashboardCarousel() {
         const response = await getUserCourses(user.user_id);
         setCourses(response);
       }
-      setLoading(false); // Termina el estado de carga
+      setLoading(false);
     };
     fetchData();
   }, [user?.user_id]);
@@ -42,7 +42,6 @@ export function DashboardCarousel() {
     >
       <CarouselContent className="h-[250px]">
         {loading ? (
-          // Skeletons para el estado de carga
           Array(3)
             .fill(null)
             .map((_, index) => (
@@ -61,7 +60,6 @@ export function DashboardCarousel() {
               </CarouselItem>
             ))
         ) : (
-          // Muestra los cursos reales cuando han cargado
           courses.map((course) => (
             <CarouselItem
               key={course.id}
@@ -74,7 +72,7 @@ export function DashboardCarousel() {
                     width={500}
                     height={500}
                     alt="logo"
-                    priority={false}
+                    quality={50}
                     className="w-full h-[200px] object-cover"
                   />
                 </CardHeader>
@@ -88,7 +86,7 @@ export function DashboardCarousel() {
         <CarouselItem className="md:basis-1/2 lg:basis-1/3 scale-95">
           <Card className="h-full flex justify-center items-center">
             <CardContent className="text-center gap-2 flex flex-col py-2">
-              <p>Add more courses to see them here</p>
+              <p>Add more courses so we can see them here.</p>
               <Link href="#">
                 <Button>Add course</Button>
               </Link>

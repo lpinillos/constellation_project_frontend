@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import CardDashboard from "@/components/ui/dashboard-cards";
 import { DashboardCarousel } from "@/components/ui/dashboard-carousel";
+import DashboardTable from "@/components/ui/dashboard-table";
 
 export const metadata: Metadata = {
   title: "Constellation - Dashboard",
@@ -15,6 +16,7 @@ export default function DashboardPage() {
       <h2 className="text-xl my-5">Last courses</h2>
       <DashboardCarousel />
       <h2 className="text-xl my-5">Last activities</h2>
+      <DashboardTable />
     </main>
   );
 }
