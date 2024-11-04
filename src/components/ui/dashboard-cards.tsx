@@ -62,7 +62,7 @@ export default function CardDashboard() {
   }, [user]);
 
   return (
-    <section className="grid sm:grid-cols-2 lg:grid-cols-3 justify-items-stretch gap-x-5 gap-y-2 pr-4 sm:[&>*:last-child:nth-child(odd)]:col-span-2 lg:[&>*:last-child:nth-child(odd)]:col-span-1">
+    <section className="grid sm:grid-cols-2 lg:grid-cols-3 justify-items-stretch gap-x-5 gap-y-2 sm:[&>*:last-child:nth-child(odd)]:col-span-2 lg:[&>*:last-child:nth-child(odd)]:col-span-1">
       {dataCards.map((card, index) => (
         <Link
           key={index}

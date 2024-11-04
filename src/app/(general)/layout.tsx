@@ -17,7 +17,7 @@ export default function GeneralLayout({
           <Separator orientation="vertical" />
           <AppBreadcrumb />
         </nav>
-        <section className="pl-4 pt-4">{children}</section>
+        <section className="px-4 pt-4">{children}</section>
       </main>
     </SidebarProvider>
   );
