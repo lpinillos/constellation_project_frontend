@@ -62,7 +62,7 @@ export default function CoursesView() {
             </div>
 
             <div className="p-8 space-y-6">
-                <h1 className="text-3xl font-bold ">Compunet 3</h1>
+                <h1 className="text-3xl font-bold text-primary">Compunet 3</h1>
 
                 <div className="w-full h-px bg-gray-500 my-4" />
 
@@ -70,14 +70,14 @@ export default function CoursesView() {
                     <p onClick={() => setStudentModalOpen(true)} className="cursor-pointer underline">
                         23 Students
                     </p>
-                    <p>Teacher: Diego Mueses</p>
+                    <p>Teacher: Darwin</p>
                 </div>
 
                 <p className="text-semibold">
                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore ad inventore placeat, cum est tempore nobis? Quos quia magnam consequatur! Quis delectus, doloremque vitae in eligendi reprehenderit iusto eius accusantium. Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore optio, voluptatum doloribus porro dolore laborum corrupti unde maiores repellendus, quae sequi tempore provident sunt voluptatibus harum dolor nemo cupiditate dolorum? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloremque quod unde repellendus veniam, eius libero veritatis hic incidunt minus rem nemo, dolores aliquam totam molestiae nesciunt alias consectetur modi velit!
                 </p>
 
-                <h2 className="text-2xl font-semibold ">Projects</h2>
+                <h2 className="text-2xl font-semibold text-primary ">Projects</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 ">
                     <Card className="w-full scale-95 hover:scale-100 hover:cursor-pointer transition-all ease-linear rounded-lg overflow-hidden">
                         <CardHeader className="p-0">
