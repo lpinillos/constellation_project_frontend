@@ -24,6 +24,10 @@ import { getTeams } from "@/services/teamService";
 import { getStudentsSkills } from "@/services/userService";
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import { studentTeam } from "@/services/courseService";
+import { useParams } from "next/navigation";
+import { findOne } from "@/services/activityService";
+import { IActivity } from "@/interfaces/activity.interface";
+
 
 export default function ActivityView() {
   const [teams, setTeams] = useState<ITeam[]>([]);
@@ -36,6 +40,25 @@ export default function ActivityView() {
   const [teamStudent, setTeamStudent] = useState<ITeam[]>([]);
   const { user } = useCurrentUser();
   const isProfessor = user?.role === "teacher";
+  const params= useParams();
+  const idActivity = params.idActivity as string;
+  
+  const [activity, setActivity] = useState<IActivity | null>(null);
+
+
+
+  useEffect(() => {
+    const fetchActivity = async () => {
+      try {
+        const data = await findOne(idActivity);
+        setActivity(data);
+      } catch (error) {
+        console.error("Error fetching activity:", error);
+      }
+    };
+
+    fetchActivity();
+  }, [idActivity]);
 
   // Inside the useEffect hook
   useEffect(() => {
@@ -67,7 +90,7 @@ export default function ActivityView() {
         } else {
           const response = await studentTeam(
             "310a684d-8586-410e-a903-a0e23966226e",
-            "f6bc67f6-94a8-4d1d-acbd-5f23fdaa947c"
+            user?.user_id as string
           );
 
           setTeamStudent(response);
@@ -94,6 +117,11 @@ export default function ActivityView() {
     fetchTeamsAndSkills();
   }, [isProfessor]);
 
+
+
+
+
+
   const filteredTeams = teams.filter((team) =>
     team.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -117,16 +145,12 @@ export default function ActivityView() {
       </div>
 
       <div className="p-8 space-y-6">
-        <h1 className="text-3xl font-bold">Next</h1>
+        <h1 className="text-3xl font-bold">{activity?.name}</h1>
 
         <div className="w-full h-px bg-gray-500 my-4" />
 
-        <div className="text-semibold">
-          <p>Teacher: Diego Mueses</p>
-        </div>
-
         <p className="text-semibold">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit...
+          {activity?.description}
         </p>
 
         <div className="mt-8 bg-sidebar p-4">
