@@ -23,3 +23,27 @@ export const findOne = async (id: string): Promise<IActivity> => {
         } as IActivity;
     }
 }
+
+
+
+export const createActivity = async (activity: IActivity): Promise<IActivity> => {
+    try {
+        const token = Cookies.get('token');
+        const response = await axios.post('/activities', activity, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return {
+            id: '',
+            name: '',
+            description: '',
+            course_id: ''
+        } as IActivity;
+    }
+}
+
+
