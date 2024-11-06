@@ -10,7 +10,7 @@ type UpdateFormValues = z.infer<typeof updateFormSchema>;
 
 export function useUpdate() {
     const router = useRouter();
-    const { user, updateUser } = useCurrentUser();
+    const { user } = useCurrentUser();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 

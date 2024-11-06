@@ -1,7 +1,5 @@
 "use client"
 
-import { SidebarMenuButton } from "./sidebar";
-import { ChevronUp } from "lucide-react";
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import { useEffect, useState } from "react";
 import { getUserByID } from "@/services/userService";
