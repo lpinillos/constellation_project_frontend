@@ -97,7 +97,7 @@ export default function StudentEvalForm() {
                             </div>
                         ))}
                         <DialogFooter>
-                            <Button type="submit" className="w-full">
+                            <Button type="submit" className="w-full" onClick={() => setOpen(false)}>
                                 Submit
                             </Button>
                         </DialogFooter>
