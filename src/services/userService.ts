@@ -41,4 +41,20 @@ export const getUserStudents = async (userId: string): Promise<IUser[]> => {
         console.error(error);
         return [];
     }
+
 }
+
+export const getStudentsSkills = async (userId: string): Promise<IUser[]> => {
+    try {
+        const response = await axios.get<IUser[]>(`/auth/students/skills/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('token')}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
