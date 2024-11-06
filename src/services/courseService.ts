@@ -51,7 +51,7 @@ export async function createCourse(courseData: Partial<CreateCourse>) {
         });
 
         return response.data;
-    } catch (error) {
+    } catch {
         throw new Error("Error creating course");
     }
 }

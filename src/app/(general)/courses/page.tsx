@@ -38,6 +38,7 @@ export default function Courses() {
     const isProfessor = user?.role === "teacher";
 
     const handleCourseCreated = async () => {
+        if (!user) return;
         const response = await getUserCourses(user.user_id);
         setCourses(response);
         setShowCreateForm(false);
