@@ -2,12 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 // import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import { ICourse } from "@/interfaces/course.interface";
 import { getUserCourses } from "@/services/userService";
@@ -43,8 +38,6 @@ export default function Courses() {
 
     const isProfessor = user?.role === "teacher";
 
-    console.log(user);
-
     return (
         <main className="overflow-hidden">
             <h1 className="text-3xl font-semibold mb-5">Courses</h1>
@@ -52,12 +45,14 @@ export default function Courses() {
             {courses.length === 0 ? (
                 <div className="flex flex-col items-center justify-center text-center min-h-[70vh]">
                     <p className="text-2xl font-semibold mb-2">No courses available 😭</p>
-                    <button
-                        onClick={handleAddCourse}
-                        className="mt-4 px-6 py-2 bg-primary font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    >
-                        Add Course
-                    </button>
+                    {isProfessor && (
+                        <button
+                            onClick={handleAddCourse}
+                            className="mt-4 px-6 py-2 bg-primary font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        >
+                            Add Course
+                        </button>
+                    )}
                 </div>
             ) : (
                 <>
@@ -76,21 +71,23 @@ export default function Courses() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6">
                         {filteredCourses.map((course) => (
-                            <Card key={course.id} className="w-full scale-95 hover:scale-100 hover:cursor-pointer transition-all ease-linear rounded-lg overflow-hidden">
-                                <CardHeader className="p-0">
-                                    <Image
-                                        src="/images/nebulosa.webp"
-                                        width={500}
-                                        height={500}
-                                        alt="logo"
-                                        quality={50}
-                                        className="w-full h-[200px] object-cover"
-                                    />
-                                </CardHeader>
-                                <CardContent className="p-4">
-                                    <CardTitle className="text-xl font-bold text-white">{course.name}</CardTitle>
-                                </CardContent>
-                            </Card>
+                            <Link href={`/courses/${course.id}`} key={course.id}>
+                                <Card key={course.id} className="w-full scale-95 hover:scale-100 hover:cursor-pointer transition-all ease-linear rounded-lg overflow-hidden">
+                                    <CardHeader className="p-0">
+                                        <Image
+                                            src="/images/nebulosa.webp"
+                                            width={500}
+                                            height={500}
+                                            alt="logo"
+                                            quality={50}
+                                            className="w-full h-[200px] object-cover"
+                                        />
+                                    </CardHeader>
+                                    <CardContent className="p-4">
+                                        <CardTitle className="text-xl font-bold text-white">{course.name}</CardTitle>
+                                    </CardContent>
+                                </Card>
+                            </Link>
                         ))}
 
                         {isProfessor && (
