@@ -26,62 +26,72 @@ import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import { studentTeam } from "@/services/courseService";
 
 export default function ActivityView() {
-  const [teams, setTeams] = useState<ITeam[]>([]); // Estado para almacenar los equipos
+  const [teams, setTeams] = useState<ITeam[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTeam, setSelectedTeam] = useState<ITeam | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [studentSkills, setStudentSkills] = useState<{
     [key: string]: IUser[];
-  }>({}); // Estado para almacenar las habilidades
+  }>({});
   const [teamStudent, setTeamStudent] = useState<ITeam[]>([]);
   const { user } = useCurrentUser();
-
   const isProfessor = user?.role === "teacher";
 
-  // Fetch de equipos desde la API
+  // Inside the useEffect hook
   useEffect(() => {
-    const fetchTeams = async () => {
+    const fetchTeamsAndSkills = async () => {
       try {
         if (isProfessor) {
-          const data = await getTeams("310a684d-8586-410e-a903-a0e23966226e"); // Llama a la función para obtener equipos
-          console.log("Datos de la API:", data); // Verifica el formato de los datos
-
-          // Filtrar equipos duplicados
+          const data = await getTeams("310a684d-8586-410e-a903-a0e23966226e");
           const uniqueTeams = data.filter(
             (team, index, self) =>
               index === self.findIndex((t) => t.id === team.id)
           );
 
-          setTeams(uniqueTeams); // Actualiza el estado con los datos obtenidos
+          setTeams(uniqueTeams);
 
-          // Ahora obtenemos las habilidades de los estudiantes
           const skillsPromises = uniqueTeams.flatMap((team) =>
             team.users.map(async (user: IUser) => {
-              const skills: IUser[] = await getStudentsSkills(user.id); // Supone que getStudentsSkills acepta un ID de usuario
+              const skills: IUser[] = await getStudentsSkills(user.id);
               return { id: user.id, skills };
             })
           );
 
-          // Esperamos a que se resuelvan todas las promesas
           const skillsResults = await Promise.all(skillsPromises);
-
-          // Creamos un objeto donde las claves son los IDs de los estudiantes y los valores son sus habilidades
           const skillsMap = skillsResults.reduce((acc, { id, skills }) => {
-            acc[id] = skills; // Directly assign the skills array
+            acc[id] = skills;
             return acc;
           }, {} as { [key: string]: IUser[] });
 
-          setStudentSkills(skillsMap); // Actualiza el estado con las habilidades
+          setStudentSkills(skillsMap);
         } else {
-          const response = await studentTeam("310a684d-8586-410e-a903-a0e23966226e", "f6bc67f6-94a8-4d1d-acbd-5f23fdaa947c");
-          setTeamStudent(response)
+          const response = await studentTeam(
+            "310a684d-8586-410e-a903-a0e23966226e",
+            "f6bc67f6-94a8-4d1d-acbd-5f23fdaa947c"
+          );
+
+          setTeamStudent(response);
+
+          // Fetch and map skills for each student in the team
+          const skillsPromises = response.map(async (user: ITeam) => {
+            const skills = await getStudentsSkills(user.id);
+            return { id: user.id, skills };
+          });
+
+          const skillsResults = await Promise.all(skillsPromises);
+          const skillsMap = skillsResults.reduce((acc, { id, skills }) => {
+            acc[id] = skills;
+            return acc;
+          }, {} as { [key: string]: IUser[] });
+
+          setStudentSkills(skillsMap);
         }
       } catch (error) {
         console.error("Error fetching teams:", error);
       }
     };
 
-    fetchTeams(); // Ejecuta el fetch al cargar el componente
+    fetchTeamsAndSkills();
   }, [isProfessor]);
 
   const filteredTeams = teams.filter((team) =>
@@ -120,32 +130,26 @@ export default function ActivityView() {
         </p>
 
         <div className="mt-8 bg-sidebar p-4">
-          {
-            isProfessor ? (
-              <p className="text-lg font-bold">Teams</p>
-            ) : (
-              <p className="text-lg font-bold">Teams</p>
-            )
-          }
-          {
-            isProfessor && <Input
-            placeholder="Search team"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="my-4"
-          />
-          }
+          <p className="text-lg font-bold">Teams</p>
+          {isProfessor && (
+            <Input
+              placeholder="Search team"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="my-4"
+            />
+          )}
 
-          {isProfessor ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Members</TableHead>
-                  <TableHead>Role</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTeams.map((team) => (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{isProfessor ? "Members" : "Team Name"}</TableHead>
+                <TableHead>{isProfessor ? "Role" : "Members"}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isProfessor ? (
+                filteredTeams.map((team) => (
                   <TableRow key={team.id}>
                     <TableCell>
                       <p
@@ -163,44 +167,31 @@ export default function ActivityView() {
                       </p>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <Table>
-              <TableHeader>
+                ))
+              ) : teamStudent.length > 0 ? (
+                teamStudent.map((team) => (
+                  <TableRow key={team.id}>
+                    <TableCell>
+                      <p className="text-blue-500 font-bold">{team.name}</p>
+                    </TableCell>
+                    <TableCell>
+                      <p>
+                        {studentSkills[team.id] && studentSkills[team.id].length > 0
+                          ? (studentSkills[team.id] || [])
+                              .map((skill) => skill.name)
+                              .join(", ")
+                          : "None"}
+                      </p>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
                 <TableRow>
-                  <TableHead>Team Name</TableHead>
-                  <TableHead>Members</TableHead>
+                  <TableCell colSpan={2}>You don&apos;t have a team</TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {
-                  teamStudent ? (
-                    teamStudent.map((team) => (
-                      <TableRow key={team.id}>
-                        <TableCell>
-                          <p
-                            className="text-blue-500 font-bold cursor-pointer"
-                            onClick={() => handleTeamClick(team)}
-                          >
-                            {team.name}
-                          </p>
-                        </TableCell>
-                        <TableCell>
-                          <p>
-                            Role
-                          </p>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <p>You dont have a team</p>
-                  )
-                }
-              </TableBody>
-            </Table>
-          )}
+              )}
+            </TableBody>
+          </Table>
         </div>
       </div>
 
@@ -214,7 +205,7 @@ export default function ActivityView() {
             <p className="font-semibold">Members</p>
             <ul>
               {selectedTeam?.users.map((user) => {
-                const skills = studentSkills[user.id] || []; // Obtener habilidades del estado
+                const skills = studentSkills[user.id] || [];
                 return (
                   <li key={user.id}>
                     <span className="font-bold">
