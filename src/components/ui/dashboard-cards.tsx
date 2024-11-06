@@ -1,32 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { getUserActivities, getUserCourses, getUserStudents } from "@/services/userService";
+import { getUserActivities, getUserCourses, getUserStudents, getUserTeams } from "@/services/userService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookCopy, Boxes, Users } from "lucide-react";
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
-
-const dataCards = [
-  {
-    title: "Courses",
-    url: "/courses",
-    icon: BookCopy,
-    fetchData: getUserCourses,
-  },
-  {
-    title: "Activities",
-    url: "/activities",
-    icon: Boxes,
-    fetchData: getUserActivities,
-  },
-  {
-    title: "Students",
-    url: "/students",
-    icon: Users,
-    fetchData: getUserStudents,
-  },
-];
 
 export default function CardDashboard() {
   const { user } = useCurrentUser();
@@ -36,6 +15,27 @@ export default function CardDashboard() {
     Activities: "...",
     Students: "...",
   });
+
+  const dataCards = useMemo(() => [
+    {
+      title: "Courses",
+      url: "/courses",
+      icon: BookCopy,
+      fetchData: getUserCourses,
+    },
+    {
+      title: "Activities",
+      url: "/activities",
+      icon: Boxes,
+      fetchData: getUserActivities,
+    },
+    {
+      title: user?.role === "student" ? "Teams" : "Students",
+      url: user?.role === "student" ? "/teams" : "/students",
+      icon: Users,
+      fetchData: user?.role === "student" ? getUserTeams : getUserStudents,
+    },
+  ], [user]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +59,7 @@ export default function CardDashboard() {
       setLoading(false);
     };
     fetchData();
-  }, [user]);
+  }, [dataCards, user]);
 
   return (
     <section className="grid sm:grid-cols-2 lg:grid-cols-3 justify-items-stretch gap-x-5 gap-y-2 sm:[&>*:last-child:nth-child(odd)]:col-span-2 lg:[&>*:last-child:nth-child(odd)]:col-span-1">
@@ -79,7 +79,9 @@ export default function CardDashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <CardTitle>{card.title}</CardTitle>
+              <CardTitle>
+                {user?.role === "student" && card.title === "Students" ? "Teams" : card.title}
+              </CardTitle>
             </CardContent>
           </Card>
         </Link>

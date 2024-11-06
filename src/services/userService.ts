@@ -14,6 +14,20 @@ export const getUserCourses = async (userId: string): Promise<ICourse[]> => {
     }
 }
 
+export const getUserTeams = async (userId: string): Promise<IUser[]> => {
+    try {
+        const response = await axios.get<IUser[]>(`/auth/teams/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('token')}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
 export const getUserActivities = async (userId: string): Promise<IActivity[]> => {
     try {
         const token = Cookies.get('token');
