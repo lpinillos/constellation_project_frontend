@@ -13,6 +13,7 @@ import { ISchedule } from "@/interfaces/schedule.interface"
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser"
 import { createSkill } from "@/services/surveyService"
 import { createSchedule } from "@/services/surveyService"
+import Link from 'next/link'
 
 const SkillsScreen = ({ skills, rowsConfiguration, onNext }: {
     skills: ISkill[],
@@ -21,23 +22,30 @@ const SkillsScreen = ({ skills, rowsConfiguration, onNext }: {
 }) => {
     const dispatch = useAppDispatch();
     const selectedSkills = useAppSelector((state) => state.skills.selectedSkills);
+    const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
 
     const handleSkillSelection = async (skillId: string) => {
         const skillExists = selectedSkills.some(skill => skill.id === skillId);
 
         if (skillExists) {
             dispatch(removeSkill(skillId));
-            console.log("Skill eliminada: ", skillId);
         } else {
             const response = await getSkillByID(skillId);
             dispatch(addSkill(response));
-            console.log("Skill añadida: ", response);
         }
     };
 
-    const isSkillSelected = (skillId: string) => {
-        return selectedSkills.some(skill => skill.id === skillId);
+    const isSkillSelected = (skillId: string) => selectedSkills.some(skill => skill.id === skillId);
+
+    const handleNext = () => {
+        if (selectedSkills.length === 0) { // Validación de selección de al menos una habilidad
+            setErrorMessage("You need to choose at least 1 option");
+        } else {
+            setErrorMessage("");
+            onNext();
+        }
     };
+
     return (
         <>
             <div className="w-full flex justify-start pt-8">
@@ -70,7 +78,8 @@ const SkillsScreen = ({ skills, rowsConfiguration, onNext }: {
                     </ToggleGroup>
                 ))}
             </div>
-            <Button onClick={onNext} className="h-[5vh] w-[15vh] text-lg mt-8">Next</Button>
+            {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>} {/* Mensaje de error */}
+            <Button onClick={handleNext} className="h-[5vh] w-[15vh] text-lg mt-8">Next</Button>
         </>
     )
 }
@@ -110,7 +119,7 @@ const ScheduleScreen = ({ onNext, onBack }: {
         setSchedule(newSchedule);
     };
 
-    const handleAddSchedule = (day: string, hour_i: Date, hour_f: Date, state: boolean) => {
+    const handleAddSchedule = (day: string, hour_i: string, hour_f: string, state: boolean) => {
         if (user) {
             const newScheduleEntry = { id: user.user_id, day, hour_i, hour_f, state, userId: user.user_id };
 
@@ -163,7 +172,7 @@ const ScheduleScreen = ({ onNext, onBack }: {
                             <h3 className="text-xl font-semibold text-white">{daySchedule.day}</h3>
                             <input
                                 type="checkbox"
-                                onClick={() => handleAddSchedule(daySchedule.day, new Date(daySchedule.openTime), new Date(daySchedule.closeTime), daySchedule.isOpen)}
+                                onClick={() => handleAddSchedule(daySchedule.day, daySchedule.openTime, daySchedule.closeTime, daySchedule.isOpen)}
                                 checked={daySchedule.isOpen}
                                 onChange={() => handleToggleOpen(index)}
                                 className="scale-150"
@@ -216,7 +225,7 @@ const EndPage = ({ onNext, onBack }: {
 
             {/* Botones de navegación */}
             <div className="flex gap-4 mt-8">
-                <Button onClick={onBack} className="h-[5vh] w-[15vh] text-lg">Back</Button>
+                <Link href='/dashboard'><Button className="h-[5vh] w-[15vh] text-lg">Enjoy The App!</Button></Link>
             </div>
         </div>
     );

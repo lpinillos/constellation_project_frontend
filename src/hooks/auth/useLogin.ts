@@ -8,6 +8,7 @@ import { login } from "@/services/authService";
 import Cookies from "js-cookie";
 import { getStudentsSkills } from "@/services/userService";
 import { useCurrentUser } from "./useCurrentUser";
+import { getUserByID } from "@/services/userService";
 
 type LoginFormValues = z.infer<typeof loginFormSchema>;
 
@@ -40,8 +41,11 @@ export function useLogin() {
         if (userID) {
 
           const skills = await getStudentsSkills(userID);
+          const userRole = await getUserByID(userID);
+          console.log(skills.length);
+          console.log(userRole.role);
 
-          if (skills.length === 0) {
+          if (skills.length === 0 && userRole.role === "student") {
             router.push(`/skills/${userID}`);
           } else {
             router.push("/dashboard");
