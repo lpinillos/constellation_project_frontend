@@ -62,7 +62,7 @@ export function DashboardCarousel() {
           : courses.map((course) => (
               <CarouselItem
                 key={course.id}
-                className="md:basis-1/2 lg:basis-1/3 scale-95 hover:scale-100 transition-all ease-linear hover:cursor-pointer"
+                className="md:basis-1/2 lg:basis-1/3 scale-95 hover:scale-100 transition-all ease-linear"
               >
                 <Card className="h-full flex flex-col">
                   <CardHeader className="p-0">
@@ -76,7 +76,9 @@ export function DashboardCarousel() {
                     />
                   </CardHeader>
                   <CardContent className="px-4 py-2">
-                    <span className="text-lg font-semibold">{course.name}</span>
+                    <Link href={`/courses/${course.id}`} className="hover:underline  hover:cursor-pointer">
+                      <p>{course.name}</p>
+                    </Link>
                   </CardContent>
                 </Card>
               </CarouselItem>
