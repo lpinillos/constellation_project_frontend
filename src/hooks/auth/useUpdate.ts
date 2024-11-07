@@ -35,7 +35,7 @@ export function useUpdate() {
                     setError("Passwords do not match");
                     return;
                 }
-                console.log("ESTOS SON LOS VALUES",values);
+
                 const response = await update({
                     email: values.email,
                     name: values.name,

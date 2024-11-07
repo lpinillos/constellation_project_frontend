@@ -79,9 +79,11 @@ export function AppSidebar() {
                 side="top"
                 className="w-[--radix-popper-anchor-width] bg-[var(--background)] text-white"
               >
-                <DropdownMenuItem>
-                  <Link href="/updateProfile">Account</Link>
-                </DropdownMenuItem>
+                <Link href="/updateProfile">
+                  <DropdownMenuItem className="cursor-pointer">
+                    Update Password
+                  </DropdownMenuItem>
+                </Link>
                 <BtnLogout />
               </DropdownMenuContent>
             </DropdownMenu>
