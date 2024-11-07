@@ -3,6 +3,7 @@ import axios from "./index";
 import { ICourse } from "@/interfaces/course.interface";
 import { IActivity } from "@/interfaces/activity.interface";
 import Cookies from 'js-cookie';
+import { ISkill } from "@/interfaces/skill.interface";
 
 export const getUserCourses = async (userId: string): Promise<ICourse[]> => {
     try {
@@ -70,6 +71,8 @@ export const getStudentsSkills = async (userId: string): Promise<IUser[]> => {
                 Authorization: `Bearer ${Cookies.get('token')}`
             }
         });
+
+        console.log("ESTAS SON LAS SKILLS: ", response.data);
         return response.data;
     } catch (error) {
         console.error(error);
@@ -107,3 +110,32 @@ export const uploadStudents = async (file: File, courseId: string): Promise<void
         console.error(error);
     }
 }
+
+export const getSkills = async (): Promise<ISkill[]> => {
+    try {
+        const response = await axios.get<ISkill[]>('/skills', {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('token')}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
+export const getSkillByID = async (skillId: string): Promise<ISkill> => {
+    try {
+        const response = await axios.get<ISkill>(`/skills/${skillId}`, {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('token')}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return {} as ISkill;
+    }
+}
+
