@@ -7,14 +7,12 @@ import { loginFormSchema } from "@/schemas/LoginForm.schema";
 import { login } from "@/services/authService";
 import Cookies from "js-cookie";
 import { getStudentsSkills } from "@/services/userService";
-import { useCurrentUser } from "./useCurrentUser";
 import { getUserByID } from "@/services/userService";
 
 type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export function useLogin() {
   const router = useRouter();
-  const { user } = useCurrentUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

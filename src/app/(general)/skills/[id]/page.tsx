@@ -17,7 +17,7 @@ import Link from 'next/link'
 
 const SkillsScreen = ({ skills, rowsConfiguration, onNext }: {
     skills: ISkill[],
-    rowsConfiguration: any[],
+    rowsConfiguration: { startIndex: number, items: number }[],
     onNext: () => void
 }) => {
     const dispatch = useAppDispatch();
@@ -208,7 +208,7 @@ const ScheduleScreen = ({ onNext, onBack }: {
     );
 }
 
-const EndPage = ({ onNext, onBack }: {
+const EndPage = ({}: {
     onNext: () => void,
     onBack: () => void
 }) => {
@@ -220,7 +220,7 @@ const EndPage = ({ onNext, onBack }: {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
                 <h1 className="text-5xl font-semibold text-white">All set up!</h1>
-                <p className="text-xl text-gray-300 mt-2">You're ready to enjoy the app.</p>
+                <p className="text-xl text-gray-300 mt-2">You are ready to enjoy the app.</p>
             </div>
 
             {/* Botones de navegación */}
@@ -233,7 +233,7 @@ const EndPage = ({ onNext, onBack }: {
 
 
 
-export default function skills() {
+export default function Skills() {
     const [skills, setSkills] = useState<ISkill[]>([]);
     const [currentScreen, setCurrentScreen] = useState(1);
 
