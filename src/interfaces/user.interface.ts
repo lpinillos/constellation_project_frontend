@@ -8,6 +8,5 @@ export interface IUser {
     email: string;
     courses: ICourse[];
     role: string;
-    last_name: string;
     skills: ISkill[];
 }
