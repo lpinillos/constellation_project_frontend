@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const protectedRoutes = ['/dashboard'];
+const protectedRoutes = ['/dashboard', '/courses', '/updateProfile'];
+
 
 export default function middleware(request: NextRequest) {
     const currentUser = request.cookies.get("token")?.value;
