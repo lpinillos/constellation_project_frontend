@@ -17,7 +17,7 @@ import {
 import { IUser } from '@/interfaces/user.interface';
 import { useParams } from 'next/navigation';
 import ActivityForm from '@/components/forms/ActivityForm';
-
+import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 
 
 
@@ -78,6 +78,8 @@ export default function CoursesView() {
     const [isStudentModalOpen, setStudentModalOpen] = useState(false);
     const [course, setCourse] = useState<ICourse>();
     const [users, setUsers] = useState<IUser[]>([]);
+    const { user } = useCurrentUser();
+    const isProfessor = user?.role === "teacher";
 
     const params = useParams();
     const id = params.id as string;
@@ -140,8 +142,7 @@ export default function CoursesView() {
 
                 <div className="flex justify-between items-center">
                     <h2 className="text-2xl font-semibold text-primary">Activities</h2>
-                     <ActivityForm idCourse={id}  />
-                   
+                    {isProfessor && <ActivityForm idCourse={id} />}
                 </div>
                 <Table>
                     <TableHeader>
