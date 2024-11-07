@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createCourse } from "@/services/courseService";
+import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 
 interface CreateCourseFormProps {
     onCourseCreated: () => void;
@@ -14,20 +15,25 @@ export default function CreateCourseForm({ onCourseCreated }: CreateCourseFormPr
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [users, setUsers] = useState<string[]>([]);
-
+    const {user} = useCurrentUser();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const success = await createCourse({ name, description, users});
 
-        if (success) {
-            onCourseCreated(); 
-            setName("");
-            setDescription("");
-            setUsers([]);
-        } else {
-            alert("Error al crear el curso.");
+        if(user?.user_id){
+            users.push(user?.user_id);
+            const success = await createCourse({ name, description, users});
+        
+
+            if (success) {
+                onCourseCreated(); 
+                setName("");
+                setDescription("");
+                setUsers([]);
+            } else {
+                alert("Error al crear el curso.");
+            }
         }
     };
 
@@ -58,7 +64,7 @@ export default function CreateCourseForm({ onCourseCreated }: CreateCourseFormPr
                             className="w-full p-2 rounded-md bg-[#1F1F1F] text-white"
                         />
                     </div>
-                    <div className="mb-4">
+                    {/* <div className="mb-4">
                         <label className="block mb-1 text-white">User IDs (separated by commas)</label>
                         <input
                             type="text"
@@ -67,7 +73,7 @@ export default function CreateCourseForm({ onCourseCreated }: CreateCourseFormPr
                             required
                             className="w-full p-2 rounded-md bg-[#1F1F1F] text-white"
                         />
-                    </div>
+                    </div> */}
                     <Button type="submit">Create Course</Button>
                 </form>
             </CardContent>
