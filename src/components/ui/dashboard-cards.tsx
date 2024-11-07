@@ -66,7 +66,7 @@ export default function CardDashboard() {
       {dataCards.map((card, index) => (
         <Link
           key={index}
-          href={card.url}
+          href={card.url == "/courses" ? card.url : "/dashboard"}
           className="w-full h-[165px] scale-95 hover:scale-100 transition-all ease-linear"
         >
           <Card className="w-full h-full bg-primary text-primary-foreground flex flex-col">
