@@ -20,8 +20,6 @@ import ActivityForm from '@/components/forms/ActivityForm';
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import UploadStudentsForm from '@/components/forms/UploadStudentsForm';
 
-
-
 interface StudentModalProps {
     open: boolean;
     onClose: () => void;

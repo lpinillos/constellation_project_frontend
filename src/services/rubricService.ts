@@ -2,6 +2,7 @@ import { IRubric } from "@/interfaces/rubric.interface";
 import axios from "./index";
 import Cookies from 'js-cookie';
 import { ICriteria } from '@/interfaces/criteria.interface';
+import { IRubricGrade, IRubricGradeSend } from "@/interfaces/rubric_grade.interface";
 
 export const getRubricById = async (rubricId: string): Promise<IRubric> => {
     try {
@@ -72,3 +73,34 @@ export const createRubricWithCriteria = async (rubric: IRubric, criteria: ICrite
          }] as unknown as ICriteria[];
      }
  }
+
+ export const createRubricGrade = async (rubric_grade: IRubricGradeSend): Promise<IRubricGradeSend> => {
+    try {
+        const token = Cookies.get('token');
+        const response = await axios.post<IRubricGradeSend>(`/rubric-grade/`, rubric_grade, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return {} as IRubricGradeSend;
+    }   
+}
+
+export const getRubricGradeByRubricId = async (): Promise<IRubricGrade[]> => {
+    try {
+        const token = Cookies.get('token');
+        const response = await axios.get<IRubricGrade[]>(`/rubric-grade/`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return [] ;
+    }
+}

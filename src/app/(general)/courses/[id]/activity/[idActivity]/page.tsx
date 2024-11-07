@@ -29,9 +29,11 @@ import { findOne } from "@/services/activityService";
 import { IActivity } from "@/interfaces/activity.interface";
 import RubricForm from "@/components/forms/RubricForm";
 import { DialogDescription } from "@radix-ui/react-dialog";
-import { getRubricByActivityId } from "@/services/rubricService";
+import { createRubricGrade, getRubricByActivityId, getRubricGradeByRubricId } from "@/services/rubricService";
 import { IRubric } from "@/interfaces/rubric.interface";
 import StudentEvalForm from "@/components/forms/StudentEvalForm";
+import { Button } from "@/components/ui/button";
+import { IRubricGrade } from "@/interfaces/rubric_grade.interface";
 // import StudentEvalForm from "@/components/forms/StudentEvalForm";
 
 export default function ActivityView() {
@@ -51,6 +53,11 @@ export default function ActivityView() {
   const [rubric, setRubric] = useState<IRubric[]>();
 
   const [activity, setActivity] = useState<IActivity | null>(null);
+  const [rubric_grade, setRubricGrade] = useState<IRubricGrade[]>([]);
+
+  // const [rubric_grade, setRubricGrade] = useState<IRubric | null>(null);
+
+
 
   useEffect(() => {
     const fetchActivity = async () => {
@@ -132,6 +139,23 @@ export default function ActivityView() {
     fetchTeamsAndSkills();
   }, [idCourse, isProfessor, user?.role, user?.user_id]);
 
+
+  useEffect(() => {
+    const fetchRubricGrade = async () => {
+      try {
+
+        const grade = await getRubricGradeByRubricId();
+        setRubricGrade(grade);
+        console.log(grade);
+
+      } catch (error) {
+        console.error("Error fetching rubric grade:", error);
+      }
+    };
+    fetchRubricGrade();
+  });
+
+
   const filteredTeams = teams.filter((team) =>
     team.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -140,6 +164,14 @@ export default function ActivityView() {
     setSelectedTeam(team);
     setIsDialogOpen(true);
   };
+
+
+  const handleRubricClick = async (rubricId: string, studentEval: string) => {
+    const response = await createRubricGrade({ rubricId, studentEval });
+    console.log(response);
+  };
+
+
 
   return (
     <div className="min-h-screen text-white">
@@ -181,7 +213,7 @@ export default function ActivityView() {
                 <TableHead>{isProfessor ? "Members" : "Name"}</TableHead>
                 <TableHead>{isProfessor ? "Role" : "Skill"}</TableHead>
                 {isProfessor ? (
-                  <></>
+                  <>  </>
                 ) : (
                   <TableHead>{rubric?.[0] ? "Evaluate" : ""}</TableHead>
                 )}
@@ -256,6 +288,8 @@ export default function ActivityView() {
                 <TableCell className="font-semibold">Name</TableCell>
                 <TableCell className="font-semibold">Last Name</TableCell>
                 <TableCell className="font-semibold">Skills</TableCell>
+                <TableCell className="font-semibold">Grades</TableCell>
+                <TableCell className="font-semibold">Actions</TableCell>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -271,6 +305,21 @@ export default function ActivityView() {
                       {skills.length > 0
                         ? skills.map((skill) => skill.name).join(", ")
                         : "No skills"}
+                    </TableCell>
+                    <TableCell className="p-2 border-t">
+                      {rubric_grade
+                        .filter((grade) => grade.studentEval.id === user.id && grade.id === rubric?.[0]?.id)
+                        .map((grade) => grade.grade)
+                        .join(", ") || "No grade"}
+                    </TableCell>
+                    <TableCell>
+                      <Button className="text-white bg-primary p-2 rounded-lg" onClick={() => {
+                        if (rubric?.[0]?.id && user?.id) {
+                          handleRubricClick(rubric[0].id, user.id);
+                        }
+                      }}>
+                        Generate Grade
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );
