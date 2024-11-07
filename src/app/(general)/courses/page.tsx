@@ -91,7 +91,7 @@ export default function Courses() {
                         ))}
 
                         {isProfessor && (
-                            <Card className="h-full flex justify-center items-center scale-95">
+                            <Card className="h-[250px] flex justify-center items-center scale-95">
                                 <CardContent className="text-center gap-2 flex flex-col py-2">
                                     <p>Add more courses so we can see them here.</p>
                                     <Link href="#">

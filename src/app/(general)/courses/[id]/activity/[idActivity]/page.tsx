@@ -27,7 +27,7 @@ import { studentTeam } from "@/services/courseService";
 import { useParams } from "next/navigation";
 import { findOne } from "@/services/activityService";
 import { IActivity } from "@/interfaces/activity.interface";
-
+import RubricForm from "@/components/forms/RubricForm";
 
 export default function ActivityView() {
   const [teams, setTeams] = useState<ITeam[]>([]);
@@ -40,13 +40,11 @@ export default function ActivityView() {
   const [teamStudent, setTeamStudent] = useState<ITeam[]>([]);
   const { user } = useCurrentUser();
   const isProfessor = user?.role === "teacher";
-  const params= useParams();
+  const params = useParams();
   const idActivity = params.idActivity as string;
   const idCourse = params.id as string;
-  
+
   const [activity, setActivity] = useState<IActivity | null>(null);
-
-
 
   useEffect(() => {
     const fetchActivity = async () => {
@@ -88,11 +86,8 @@ export default function ActivityView() {
           }, {} as { [key: string]: IUser[] });
 
           setStudentSkills(skillsMap);
-        } else {
-          const response = await studentTeam(
-            idCourse,
-            user?.user_id as string
-          );
+        } else if (user?.role === "student") {
+          const response = await studentTeam(idCourse, user?.user_id as string);
 
           setTeamStudent(response);
 
@@ -116,12 +111,7 @@ export default function ActivityView() {
     };
 
     fetchTeamsAndSkills();
-  }, [isProfessor]);
-
-
-
-
-
+  }, [idCourse, isProfessor, user?.role, user?.user_id]);
 
   const filteredTeams = teams.filter((team) =>
     team.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -150,12 +140,13 @@ export default function ActivityView() {
 
         <div className="w-full h-px bg-gray-500 my-4" />
 
-        <p className="text-semibold">
-          {activity?.description}
-        </p>
+        <p className="text-semibold">{activity?.description}</p>
 
         <div className="mt-8 bg-sidebar p-4">
-          <p className="text-lg font-bold">Teams</p>
+          <div className="w-full flex justify-between items-center">
+            <p className="text-lg font-bold">Teams</p>
+            <RubricForm idActivity={idActivity} />
+          </div>
           {isProfessor && (
             <Input
               placeholder="Search team"
@@ -201,7 +192,8 @@ export default function ActivityView() {
                     </TableCell>
                     <TableCell>
                       <p>
-                        {studentSkills[team.id] && studentSkills[team.id].length > 0
+                        {studentSkills[team.id] &&
+                        studentSkills[team.id].length > 0
                           ? (studentSkills[team.id] || [])
                               .map((skill) => skill.name)
                               .join(", ")
@@ -233,7 +225,7 @@ export default function ActivityView() {
                 const skills = studentSkills[user.id] || [];
                 return (
                   <li key={user.id}>
-                    <span >
+                    <span>
                       {user.name} {user.last_name}
                     </span>
                     : {skills.map((skill) => skill.name).join(", ")}
