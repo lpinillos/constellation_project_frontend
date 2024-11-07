@@ -18,6 +18,7 @@ import { IUser } from '@/interfaces/user.interface';
 import { useParams } from 'next/navigation';
 import ActivityForm from '@/components/forms/ActivityForm';
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
+import UploadStudentsForm from '@/components/forms/UploadStudentsForm';
 
 
 
@@ -34,7 +35,7 @@ function StudentModal({ open, onClose, students }: StudentModalProps) {
                 <DialogHeader>
                     <DialogTitle className="text-3xl">Students</DialogTitle>
                 </DialogHeader>
-                <DialogDescription className="space-y-2">
+                <DialogDescription className="space-y-2" asChild>
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -123,7 +124,10 @@ export default function CoursesView() {
             </div>
 
             <div className="p-8 space-y-6">
-                <h1 className="text-3xl font-bold text-primary">{course?.name}</h1>
+                <div className='w-full flex justify-between items-center'>
+                    <h1 className="text-3xl font-bold text-primary">{course?.name}</h1>
+                    <UploadStudentsForm idCourse={id} />
+                </div>
 
                 <div className="w-full h-px bg-gray-500 my-4" />
 
