@@ -1,4 +1,5 @@
 import { ICourse } from "./course.interface";
+import { ISkill } from "./skill.interface";
 
 export interface IUser {
     id: string;
@@ -7,4 +8,6 @@ export interface IUser {
     email: string;
     role: string;
     courses: ICourse[];
+    role: string;
+    skills: ISkill[];
 }

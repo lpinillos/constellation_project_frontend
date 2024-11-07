@@ -1,9 +1,11 @@
 "use client";
 
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import CreateCourseForm from "@/components/forms/CreateCourseForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import { ICourse } from "@/interfaces/course.interface";
 import { getUserCourses } from "@/services/userService";

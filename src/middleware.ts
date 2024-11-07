@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// TO DO: Add more routes to the array to protect more routes
 const protectedRoutes = ['/dashboard'];
 
 export default function middleware(request: NextRequest) {
