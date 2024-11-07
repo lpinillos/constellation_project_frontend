@@ -180,10 +180,10 @@ export default function ActivityView() {
               <TableRow>
                 <TableHead>{isProfessor ? "Members" : "Name"}</TableHead>
                 <TableHead>{isProfessor ? "Role" : "Skill"}</TableHead>
-                {rubric?.[0] ? (
-                  <TableHead>{isProfessor ? "Role" : "Evaluate"}</TableHead>
-                ) : (
+                {isProfessor ? (
                   <></>
+                ) : (
+                  <TableHead>{rubric?.[0] ? "Evaluate" : ""}</TableHead>
                 )}
               </TableRow>
             </TableHeader>
