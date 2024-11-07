@@ -28,6 +28,7 @@ import { useParams } from "next/navigation";
 import { findOne } from "@/services/activityService";
 import { IActivity } from "@/interfaces/activity.interface";
 import RubricForm from "@/components/forms/RubricForm";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 export default function ActivityView() {
   const [teams, setTeams] = useState<ITeam[]>([]);
@@ -217,23 +218,35 @@ export default function ActivityView() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{selectedTeam?.name}</DialogTitle>
+            <DialogDescription>Members of the team</DialogDescription>
           </DialogHeader>
-          <div>
-            <p className="font-bold">Members</p>
-            <ul>
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableCell className="font-semibold">Name</TableCell>
+                <TableCell className="font-semibold">Last Name</TableCell>
+                <TableCell className="font-semibold">Skills</TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {selectedTeam?.users.map((user) => {
                 const skills = studentSkills[user.id] || [];
                 return (
-                  <li key={user.id}>
-                    <span>
-                      {user.name} {user.last_name}
-                    </span>
-                    : {skills.map((skill) => skill.name).join(", ")}
-                  </li>
+                  <TableRow key={user.id}>
+                    <TableCell className="p-2 border-t">{user.name}</TableCell>
+                    <TableCell className="p-2 border-t">
+                      {user.last_name}
+                    </TableCell>
+                    <TableCell className="p-2 border-t">
+                      {skills.length > 0
+                        ? skills.map((skill) => skill.name).join(", ")
+                        : "No skills"}
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </ul>
-          </div>
+            </TableBody>
+          </Table>
           <DialogClose />
         </DialogContent>
       </Dialog>
