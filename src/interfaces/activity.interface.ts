@@ -1,6 +1,6 @@
 export interface IActivity {
-    id: string;
+    id?: string;
     name: string;
     description: string;
-    course_id: string;
+    course: string;
 }
