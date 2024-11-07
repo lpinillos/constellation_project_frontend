@@ -16,6 +16,10 @@ import {
 } from "@/components/ui/table";
 import { IUser } from '@/interfaces/user.interface';
 import { useParams } from 'next/navigation';
+import ActivityForm from '@/components/forms/ActivityForm';
+
+
+
 
 interface StudentModalProps {
     open: boolean;
@@ -134,8 +138,11 @@ export default function CoursesView() {
                     {course?.description}
                 </p>
 
-                <h2 className="text-2xl font-semibold text-primary ">Activities</h2>
-
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-semibold text-primary">Activities</h2>
+                     <ActivityForm idCourse={id}  />
+                   
+                </div>
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -147,12 +154,13 @@ export default function CoursesView() {
                     <TableBody>
                         {course && course?.activities.length > 0 ? (
                             course?.activities.map((activity, index) => (
-                                <TableRow key={activity.id} className="hover:cursor-pointer">
+                                <TableRow key={activity.id} className="hover:cursor-pointer" onClick={() => window.location.href = `/courses/${course.id}/activity/${activity.id}`}>
                                     <TableCell>{index + 1}</TableCell>
                                     <TableCell>{activity.name}</TableCell>
                                     <TableCell>{activity.description}</TableCell>
                                 </TableRow>
                             ))
+
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={4} className="text-center">
@@ -163,10 +171,8 @@ export default function CoursesView() {
                     </TableBody>
                 </Table>
             </div>
-
+            
             <StudentModal open={isStudentModalOpen} onClose={() => setStudentModalOpen(false)} students={users?.map(user => user) || []} />
         </div>
     );
 }
-
-
