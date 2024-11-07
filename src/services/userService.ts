@@ -6,7 +6,12 @@ import Cookies from 'js-cookie';
 
 export const getUserCourses = async (userId: string): Promise<ICourse[]> => {
     try {
-        const response = await axios.get<IUser>(`/auth/${userId}`);
+        const token = Cookies.get('token');
+        const response = await axios.get<IUser>(`/auth/${userId}` , {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         return response.data.courses;
     } catch (error) {
         console.error(error);
