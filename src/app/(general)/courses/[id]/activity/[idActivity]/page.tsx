@@ -42,6 +42,7 @@ export default function ActivityView() {
   const isProfessor = user?.role === "teacher";
   const params= useParams();
   const idActivity = params.idActivity as string;
+  const idCourse = params.id as string;
   
   const [activity, setActivity] = useState<IActivity | null>(null);
 
@@ -65,7 +66,7 @@ export default function ActivityView() {
     const fetchTeamsAndSkills = async () => {
       try {
         if (isProfessor) {
-          const data = await getTeams("310a684d-8586-410e-a903-a0e23966226e");
+          const data = await getTeams(idCourse);
           const uniqueTeams = data.filter(
             (team, index, self) =>
               index === self.findIndex((t) => t.id === team.id)
@@ -89,7 +90,7 @@ export default function ActivityView() {
           setStudentSkills(skillsMap);
         } else {
           const response = await studentTeam(
-            "310a684d-8586-410e-a903-a0e23966226e",
+            idCourse,
             user?.user_id as string
           );
 
@@ -177,7 +178,7 @@ export default function ActivityView() {
                   <TableRow key={team.id}>
                     <TableCell>
                       <p
-                        className="text-blue-500 font-bold cursor-pointer"
+                        className="text-primary font-bold cursor-pointer"
                         onClick={() => handleTeamClick(team)}
                       >
                         {team.name}
@@ -196,7 +197,7 @@ export default function ActivityView() {
                 teamStudent.map((team) => (
                   <TableRow key={team.id}>
                     <TableCell>
-                      <p className="text-blue-500 font-bold">{team.name}</p>
+                      <p className="text-white font-bold">{team.name}</p>
                     </TableCell>
                     <TableCell>
                       <p>
@@ -226,13 +227,13 @@ export default function ActivityView() {
             <DialogTitle>{selectedTeam?.name}</DialogTitle>
           </DialogHeader>
           <div>
-            <p className="font-semibold">Members</p>
+            <p className="font-bold">Members</p>
             <ul>
               {selectedTeam?.users.map((user) => {
                 const skills = studentSkills[user.id] || [];
                 return (
                   <li key={user.id}>
-                    <span className="font-bold">
+                    <span >
                       {user.name} {user.last_name}
                     </span>
                     : {skills.map((skill) => skill.name).join(", ")}

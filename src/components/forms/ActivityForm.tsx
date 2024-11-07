@@ -14,9 +14,18 @@ import { Label} from "@/components/ui/label";
 import { useState } from "react";
 import { createActivity } from "@/services/activityService";
 
-export default function ActivityForm() {
+
+
+interface ActivityFormProps {
+  idCourse: string;
+}
+
+
+export default function ActivityForm({ idCourse }: ActivityFormProps) {
   const [open, setOpen] = useState(false);
-  const idCourse = "310a684d-8586-410e-a903-a0e23966226e";
+
+
+
 
   const handleOnSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,12 +34,12 @@ export default function ActivityForm() {
     const name = formData.get("nombre") as string;
     const description = formData.get("descripcion") as string;
 
-    createActivity({ course_id: idCourse, name, description });
+    createActivity({ course: idCourse, name, description });
   };
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Open Evaluation</Button>
+      <Button onClick={() => setOpen(true)}>New Activity</Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="bg-sidebar rounded-lg w-full">

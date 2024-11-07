@@ -4,7 +4,9 @@ import { ISkill } from "./skill.interface";
 export interface IUser {
     id: string;
     name: string;
+    last_name: string;
     email: string;
+    role: string;
     courses: ICourse[];
     role: string;
     last_name: string;

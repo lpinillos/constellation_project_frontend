@@ -19,7 +19,7 @@ export const findOne = async (id: string): Promise<IActivity> => {
             id: '',
             name: '',
             description: '',
-            course_id: ''
+            course: ''
         } as IActivity;
     }
 }
@@ -27,6 +27,7 @@ export const findOne = async (id: string): Promise<IActivity> => {
 
 
 export const createActivity = async (activity: IActivity): Promise<IActivity> => {
+    console.log(activity);
     try {
         const token = Cookies.get('token');
         const response = await axios.post('/activities', activity, {
@@ -41,7 +42,7 @@ export const createActivity = async (activity: IActivity): Promise<IActivity> =>
             id: '',
             name: '',
             description: '',
-            course_id: ''
+            course: ''
         } as IActivity;
     }
 }
