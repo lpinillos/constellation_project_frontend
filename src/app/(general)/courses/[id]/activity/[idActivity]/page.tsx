@@ -27,7 +27,14 @@ import { studentTeam } from "@/services/courseService";
 import { useParams } from "next/navigation";
 import { findOne } from "@/services/activityService";
 import { IActivity } from "@/interfaces/activity.interface";
-
+import RubricForm from "@/components/forms/RubricForm";
+import { DialogDescription } from "@radix-ui/react-dialog";
+import { createRubricGrade, getRubricByActivityId, getRubricGradeByRubricId } from "@/services/rubricService";
+import { IRubric } from "@/interfaces/rubric.interface";
+import StudentEvalForm from "@/components/forms/StudentEvalForm";
+import { Button } from "@/components/ui/button";
+import { IRubricGrade } from "@/interfaces/rubric_grade.interface";
+// import StudentEvalForm from "@/components/forms/StudentEvalForm";
 
 export default function ActivityView() {
   const [teams, setTeams] = useState<ITeam[]>([]);
@@ -40,11 +47,15 @@ export default function ActivityView() {
   const [teamStudent, setTeamStudent] = useState<ITeam[]>([]);
   const { user } = useCurrentUser();
   const isProfessor = user?.role === "teacher";
-  const params= useParams();
+  const params = useParams();
   const idActivity = params.idActivity as string;
   const idCourse = params.id as string;
-  
+  const [rubric, setRubric] = useState<IRubric[]>();
+
   const [activity, setActivity] = useState<IActivity | null>(null);
+  const [rubric_grade, setRubricGrade] = useState<IRubricGrade[]>([]);
+
+  // const [rubric_grade, setRubricGrade] = useState<IRubric | null>(null);
 
 
 
@@ -60,6 +71,19 @@ export default function ActivityView() {
 
     fetchActivity();
   }, [idActivity]);
+
+  useEffect(() => {
+    try {
+      const fetchRubric = async () => {
+        const rubric = await getRubricByActivityId(idActivity);
+        setRubric(rubric);
+      };
+      fetchRubric();
+    } catch (error) {
+      console.error(error);
+    }
+  }, [idActivity]);
+
 
   // Inside the useEffect hook
   useEffect(() => {
@@ -88,11 +112,8 @@ export default function ActivityView() {
           }, {} as { [key: string]: IUser[] });
 
           setStudentSkills(skillsMap);
-        } else {
-          const response = await studentTeam(
-            idCourse,
-            user?.user_id as string
-          );
+        } else if (user?.role === "student") {
+          const response = await studentTeam(idCourse, user?.user_id as string);
 
           setTeamStudent(response);
 
@@ -116,11 +137,23 @@ export default function ActivityView() {
     };
 
     fetchTeamsAndSkills();
-  }, [isProfessor]);
+  }, [idCourse, isProfessor, user?.role, user?.user_id]);
 
 
+  useEffect(() => {
+    const fetchRubricGrade = async () => {
+      try {
 
+        const grade = await getRubricGradeByRubricId();
+        setRubricGrade(grade);
+        console.log(grade);
 
+      } catch (error) {
+        console.error("Error fetching rubric grade:", error);
+      }
+    };
+    fetchRubricGrade();
+  });
 
 
   const filteredTeams = teams.filter((team) =>
@@ -131,6 +164,14 @@ export default function ActivityView() {
     setSelectedTeam(team);
     setIsDialogOpen(true);
   };
+
+
+  const handleRubricClick = async (rubricId: string, studentEval: string) => {
+    const response = await createRubricGrade({ rubricId, studentEval });
+    console.log(response);
+  };
+
+
 
   return (
     <div className="min-h-screen text-white">
@@ -150,12 +191,13 @@ export default function ActivityView() {
 
         <div className="w-full h-px bg-gray-500 my-4" />
 
-        <p className="text-semibold">
-          {activity?.description}
-        </p>
+        <p className="text-semibold">{activity?.description}</p>
 
         <div className="mt-8 bg-sidebar p-4">
-          <p className="text-lg font-bold">Teams</p>
+          <div className="w-full flex justify-between items-center">
+            <p className="text-lg font-bold">Teams</p>
+            <RubricForm idActivity={idActivity} />
+          </div>
           {isProfessor && (
             <Input
               placeholder="Search team"
@@ -168,8 +210,13 @@ export default function ActivityView() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{isProfessor ? "Members" : "Team Name"}</TableHead>
-                <TableHead>{isProfessor ? "Role" : "Members"}</TableHead>
+                <TableHead>{isProfessor ? "Members" : "Name"}</TableHead>
+                <TableHead>{isProfessor ? "Role" : "Skill"}</TableHead>
+                {isProfessor ? (
+                  <>  </>
+                ) : (
+                  <TableHead>{rubric?.[0] ? "Evaluate" : ""}</TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -193,7 +240,7 @@ export default function ActivityView() {
                     </TableCell>
                   </TableRow>
                 ))
-              ) : teamStudent.length > 0 ? (
+              ) : teamStudent ? (
                 teamStudent.map((team) => (
                   <TableRow key={team.id}>
                     <TableCell>
@@ -201,12 +248,20 @@ export default function ActivityView() {
                     </TableCell>
                     <TableCell>
                       <p>
-                        {studentSkills[team.id] && studentSkills[team.id].length > 0
+                        {studentSkills[team.id] &&
+                          studentSkills[team.id].length > 0
                           ? (studentSkills[team.id] || [])
-                              .map((skill) => skill.name)
-                              .join(", ")
+                            .map((skill) => skill.name)
+                            .join(", ")
                           : "None"}
                       </p>
+                    </TableCell>
+                    <TableCell>
+                      {rubric?.[0] ? (
+                        <StudentEvalForm rubricId={rubric[0].id} idStu={user?.user_id} idStuEval={team.id} />
+                      ) : (
+                        <></>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))
@@ -225,23 +280,52 @@ export default function ActivityView() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{selectedTeam?.name}</DialogTitle>
+            <DialogDescription>Members of the team</DialogDescription>
           </DialogHeader>
-          <div>
-            <p className="font-bold">Members</p>
-            <ul>
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableCell className="font-semibold">Name</TableCell>
+                <TableCell className="font-semibold">Last Name</TableCell>
+                <TableCell className="font-semibold">Skills</TableCell>
+                <TableCell className="font-semibold">Grades</TableCell>
+                <TableCell className="font-semibold">Actions</TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {selectedTeam?.users.map((user) => {
                 const skills = studentSkills[user.id] || [];
                 return (
-                  <li key={user.id}>
-                    <span >
-                      {user.name} {user.last_name}
-                    </span>
-                    : {skills.map((skill) => skill.name).join(", ")}
-                  </li>
+                  <TableRow key={user.id}>
+                    <TableCell className="p-2 border-t">{user.name}</TableCell>
+                    <TableCell className="p-2 border-t">
+                      {user.last_name}
+                    </TableCell>
+                    <TableCell className="p-2 border-t">
+                      {skills.length > 0
+                        ? skills.map((skill) => skill.name).join(", ")
+                        : "No skills"}
+                    </TableCell>
+                    <TableCell className="p-2 border-t">
+                      {rubric_grade
+                        .filter((grade) => grade.studentEval.id === user.id && grade.id === rubric?.[0]?.id)
+                        .map((grade) => grade.grade)
+                        .join(", ") || "No grade"}
+                    </TableCell>
+                    <TableCell>
+                      <Button className="text-white bg-primary p-2 rounded-lg" onClick={() => {
+                        if (rubric?.[0]?.id && user?.id) {
+                          handleRubricClick(rubric[0].id, user.id);
+                        }
+                      }}>
+                        Generate Grade
+                      </Button>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </ul>
-          </div>
+            </TableBody>
+          </Table>
           <DialogClose />
         </DialogContent>
       </Dialog>

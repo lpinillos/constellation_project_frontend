@@ -96,6 +96,21 @@ export const getUserByID = async (userId: string): Promise<IUser> => {
     }
 }
 
+export const uploadStudents = async (file: File, courseId: string): Promise<void> => {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        await axios.post(`/auth/uploadStudents/${courseId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${Cookies.get('token')}`
+            }
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 export const getSkills = async (): Promise<ISkill[]> => {
     try {
         const response = await axios.get<ISkill[]>('/skills', {

@@ -1,22 +1,23 @@
 "use client";
 
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-// import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import CreateCourseForm from "@/components/forms/CreateCourseForm";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import { ICourse } from "@/interfaces/course.interface";
 import { getUserCourses } from "@/services/userService";
 import { Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-// import Link from "next/link";
-import { useEffect, useState } from "react";
-
 
 export default function Courses() {
     const [courses, setCourses] = useState<ICourse[]>([]);
     const { user } = useCurrentUser();
     const [searchTerm, setSearchTerm] = useState("");
+    const [showCreateForm, setShowCreateForm] = useState(false); 
 
     useEffect(() => {
         const fetchData = async () => {
@@ -29,29 +30,35 @@ export default function Courses() {
     }, [user?.user_id]);
 
     function handleAddCourse(): void {
-        console.log("Añadir curso");
+        setShowCreateForm(!showCreateForm);
     }
 
     const filteredCourses = courses.filter((course) =>
         course.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    );
 
     const isProfessor = user?.role === "teacher";
+
+    const handleCourseCreated = async () => {
+        if (!user) return;
+        const response = await getUserCourses(user.user_id);
+        setCourses(response);
+        setShowCreateForm(false);
+    };
 
     return (
         <main className="overflow-hidden">
             <h1 className="text-3xl font-semibold mb-5">Courses</h1>
 
+            {showCreateForm && <CreateCourseForm onCourseCreated={handleCourseCreated} />} {/* Formulario */}
+
             {courses.length === 0 ? (
                 <div className="flex flex-col items-center justify-center text-center min-h-[70vh]">
                     <p className="text-2xl font-semibold mb-2">No courses available 😭</p>
                     {isProfessor && (
-                        <button
-                            onClick={handleAddCourse}
-                            className="mt-4 px-6 py-2 bg-primary font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                        >
+                        <Button onClick={handleAddCourse} className="mt-4">
                             Add Course
-                        </button>
+                        </Button>
                     )}
                 </div>
             ) : (
@@ -91,12 +98,10 @@ export default function Courses() {
                         ))}
 
                         {isProfessor && (
-                            <Card className="h-full flex justify-center items-center scale-95">
+                            <Card className="h-[250px] flex justify-center items-center scale-95">
                                 <CardContent className="text-center gap-2 flex flex-col py-2">
                                     <p>Add more courses so we can see them here.</p>
-                                    <Link href="#">
-                                        <Button>Add course</Button>
-                                    </Link>
+                                    <Button onClick={handleAddCourse}>Add course</Button>
                                 </CardContent>
                             </Card>
                         )}

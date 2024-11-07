@@ -121,7 +121,7 @@ const ScheduleScreen = ({ onNext, onBack }: {
 
     const handleAddSchedule = (day: string, hour_i: string, hour_f: string, state: boolean) => {
         if (user) {
-            const newScheduleEntry = { id: user.user_id, day, hour_i, hour_f, state, userId: user.user_id };
+            const newScheduleEntry = {day, hour_i, hour_f, state, user: user.user_id };
 
             if (!state) {
                 setAddSchedule(prevSchedule => [...prevSchedule, newScheduleEntry]);
