@@ -16,7 +16,6 @@ import { useUpdate } from "@/hooks/auth/useUpdate";
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import { getUserByID } from "@/services/userService";
 import { useEffect } from "react";
-import Link from "next/link";
 
 export default function UpdateForm() {
   const { form, isSubmitting, error, onSubmit } = useUpdate();
