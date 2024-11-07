@@ -1,39 +1,45 @@
 'use client'
 import { Progress } from "@/components/ui/progress"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { useEffect, useState } from "react"
-import { getSkills } from "@/services/userService"
-import { ISkill } from "@/interfaces/skill.interface"
 import { Button } from "@/components/ui/button"
 import { getSkillByID } from "@/services/userService"
-import { Provider } from "react-redux";
-import store from "@/redux/store";
-import { addSkill, removeSkill, setSkills } from "@/redux/slices"
+import { ISkill } from "@/interfaces/skill.interface"
+import { useAppDispatch, useAppSelector } from "@/redux/hooks"
+import { addSkill, removeSkill } from "@/redux/slices/skillSlice"
+import { useState, useEffect } from "react"
+import { getSkills } from "@/services/userService"
+import ReduxProviders from "@/components/providers/ReduxProviders"
+import { ISchedule } from "@/interfaces/schedule.interface"
+import { useCurrentUser } from "@/hooks/auth/useCurrentUser"
+import { createSkill } from "@/services/surveyService"
+import { createSchedule } from "@/services/surveyService"
 
 const SkillsScreen = ({ skills, rowsConfiguration, onNext }: {
     skills: ISkill[],
     rowsConfiguration: any[],
     onNext: () => void
 }) => {
-
-    const [selectedSkills, setSelectedSkills] = useState<ISkill[]>([]);
+    const dispatch = useAppDispatch();
+    const selectedSkills = useAppSelector((state) => state.skills.selectedSkills);
 
     const handleSkillSelection = async (skillId: string) => {
-
         const skillExists = selectedSkills.some(skill => skill.id === skillId);
 
         if (skillExists) {
-            setSelectedSkills(selectedSkills.filter(skill => skill.id !== skillId));
+            dispatch(removeSkill(skillId));
             console.log("Skill eliminada: ", skillId);
         } else {
             const response = await getSkillByID(skillId);
-            setSelectedSkills([...selectedSkills, response]);
+            dispatch(addSkill(response));
             console.log("Skill añadida: ", response);
         }
     };
 
+    const isSkillSelected = (skillId: string) => {
+        return selectedSkills.some(skill => skill.id === skillId);
+    };
     return (
-        <Provider store={store}>
+        <>
             <div className="w-full flex justify-start pt-8">
                 <h1 className="text-4xl font-semibold">Skills Survey</h1>
             </div>
@@ -46,6 +52,7 @@ const SkillsScreen = ({ skills, rowsConfiguration, onNext }: {
                         key={rowIndex}
                         type="multiple"
                         className="flex justify-center gap-4 mb-4"
+                        value={selectedSkills.map(skill => skill.id.toString())}
                     >
                         {skills
                             .slice(row.startIndex, row.startIndex + row.items)
@@ -55,6 +62,7 @@ const SkillsScreen = ({ skills, rowsConfiguration, onNext }: {
                                     key={skill.id}
                                     value={skill.id.toString()}
                                     className="h-[8vh] px-16 text-xl bg-zinc-800 hover:bg-zinc-700 data-[state=on]:bg-zinc-600"
+                                    aria-pressed={isSkillSelected(skill.id)}
                                 >
                                     {skill.name}
                                 </ToggleGroupItem>
@@ -63,7 +71,7 @@ const SkillsScreen = ({ skills, rowsConfiguration, onNext }: {
                 ))}
             </div>
             <Button onClick={onNext} className="h-[5vh] w-[15vh] text-lg mt-8">Next</Button>
-        </Provider>
+        </>
     )
 }
 
@@ -85,6 +93,11 @@ const ScheduleScreen = ({ onNext, onBack }: {
         }))
     );
 
+    const selectedSkills = useAppSelector((state) => state.skills.selectedSkills);
+    const { user } = useCurrentUser();
+
+    const [addSchedule, setAddSchedule] = useState<ISchedule[]>([]);
+
     const handleTimeChange = (index: number, timeType: 'openTime' | 'closeTime', value: string) => {
         const newSchedule = [...schedule];
         newSchedule[index][timeType] = value;
@@ -96,6 +109,44 @@ const ScheduleScreen = ({ onNext, onBack }: {
         newSchedule[index].isOpen = !newSchedule[index].isOpen;
         setSchedule(newSchedule);
     };
+
+    const handleAddSchedule = (day: string, hour_i: Date, hour_f: Date, state: boolean) => {
+        if (user) {
+            const newScheduleEntry = { id: user.user_id, day, hour_i, hour_f, state, userId: user.user_id };
+
+            if (!state) {
+                setAddSchedule(prevSchedule => [...prevSchedule, newScheduleEntry]);
+                console.log("Horario añadido: ", newScheduleEntry);
+            } else {
+                setAddSchedule(prevSchedule => prevSchedule.filter(item => item.day !== day || item.hour_i !== hour_i || item.hour_f !== hour_f));
+                console.log("Horario eliminado: ", newScheduleEntry);
+            }
+        }
+    };
+
+    const handleOnSubmit = async () => {
+        console.log("ESTA ENTRANDOOOOOOO")
+        // Crear las habilidades seleccionadas
+        if (user) {
+            for (let i = 0; i < selectedSkills.length; i++) {
+                await createSkill(selectedSkills[i].id, user?.user_id);
+                console.log("Habilidad enviada: ", selectedSkills[i]);
+            }
+
+
+            // Crear los horarios
+            for (let i = 0; i < addSchedule.length; i++) {
+                await createSchedule(addSchedule[i]);
+                console.log("Horario enviado: ", addSchedule[i]);
+            }
+        }
+
+        // Después de enviar, puedes realizar cualquier otra acción como redirigir o mostrar un mensaje
+        onNext();
+    };
+
+
+
 
     return (
         <>
@@ -112,6 +163,7 @@ const ScheduleScreen = ({ onNext, onBack }: {
                             <h3 className="text-xl font-semibold text-white">{daySchedule.day}</h3>
                             <input
                                 type="checkbox"
+                                onClick={() => handleAddSchedule(daySchedule.day, new Date(daySchedule.openTime), new Date(daySchedule.closeTime), daySchedule.isOpen)}
                                 checked={daySchedule.isOpen}
                                 onChange={() => handleToggleOpen(index)}
                                 className="scale-150"
@@ -140,7 +192,7 @@ const ScheduleScreen = ({ onNext, onBack }: {
 
             <div className="flex gap-4 mt-8">
                 <Button onClick={onBack} className="h-[5vh] w-[15vh] text-lg">Back</Button>
-                <Button onClick={onNext} className="h-[5vh] w-[15vh] text-lg">Next</Button>
+                <Button onClick={handleOnSubmit} className="h-[5vh] w-[15vh] text-lg">Submit Survey</Button>
             </div>
         </>
 
@@ -165,7 +217,6 @@ const EndPage = ({ onNext, onBack }: {
             {/* Botones de navegación */}
             <div className="flex gap-4 mt-8">
                 <Button onClick={onBack} className="h-[5vh] w-[15vh] text-lg">Back</Button>
-                <Button onClick={onNext} className="h-[5vh] w-[15vh] text-lg">Send Survey</Button>
             </div>
         </div>
     );
@@ -181,16 +232,17 @@ export default function skills() {
         const handleSkills = async () => {
             const response = await getSkills();
             setSkills(response);
+            console.log("Skills: ", response);
         }; handleSkills();
     }, []);
 
     const rowsConfiguration = [
-        { startIndex: 0, items: 3 },
-        { startIndex: 2, items: 5 },
-        { startIndex: 6, items: 3 },
-        { startIndex: 9, items: 6 },
-        { startIndex: 12, items: 3 },
-        { startIndex: 15, items: 2 },
+        { startIndex: 0, items: 4 },
+        { startIndex: 4, items: 4 },
+        { startIndex: 8, items: 4 },
+        { startIndex: 12, items: 4 },
+        { startIndex: 16, items: 3 },
+        { startIndex: 19, items: 4 },
     ];
 
     const getProgressValue = () => {
@@ -199,31 +251,34 @@ export default function skills() {
 
 
     return (
-        <div className="w-full flex flex-col items-center">
-            <Progress value={getProgressValue()} className="h-4" />
+        <ReduxProviders>
+            <div className="w-full flex flex-col items-center">
+                <Progress value={getProgressValue()} className="h-4" />
 
-            {currentScreen === 1 && (
-                <SkillsScreen
-                    skills={skills}
-                    rowsConfiguration={rowsConfiguration}
-                    onNext={() => setCurrentScreen(2)}
-                />
-            )}
+                {currentScreen === 1 && (
+                    <SkillsScreen
+                        skills={skills}
+                        rowsConfiguration={rowsConfiguration}
+                        onNext={() => setCurrentScreen(2)}
+                    />
+                )}
 
-            {currentScreen === 2 && (
-                <ScheduleScreen
-                    onNext={() => setCurrentScreen(3)}
-                    onBack={() => setCurrentScreen(1)}
-                />
-            )}
+                {currentScreen === 2 && (
+                    <ScheduleScreen
+                        onNext={() => setCurrentScreen(3)}
+                        onBack={() => setCurrentScreen(1)}
+                    />
+                )}
 
-            {currentScreen === 3 && (
-                <EndPage
-                    onNext={() => setCurrentScreen(4)}
-                    onBack={() => setCurrentScreen(2)}
-                />
-            )}
+                {currentScreen === 3 && (
+                    <EndPage
+                        onNext={() => setCurrentScreen(4)}
+                        onBack={() => setCurrentScreen(2)}
+                    />
+                )}
+            </div >
+        </ReduxProviders>
 
-        </div>
+
     );
 }
