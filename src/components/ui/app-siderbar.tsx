@@ -20,7 +20,7 @@ import {
 import SidebarMenuLink from "./SidebarMenuLink";
 import BtnLogout from "./btn-logout";
 import Link from "next/link";
-
+import UsernameSideBar from "./usernameSideBar";
 const items = [
   {
     title: "Dashboard",
@@ -35,6 +35,8 @@ const items = [
 ];
 
 export function AppSidebar() {
+
+
   return (
     <Sidebar>
       <SidebarHeader className="pt-[14px] pb-[14px] border-b">
@@ -69,7 +71,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  Username
+                  <UsernameSideBar />
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -77,9 +79,11 @@ export function AppSidebar() {
                 side="top"
                 className="w-[--radix-popper-anchor-width] bg-[var(--background)] text-white"
               >
-                <DropdownMenuItem>
-                  <span>Account</span>
-                </DropdownMenuItem>
+                <Link href="/updateProfile">
+                  <DropdownMenuItem className="cursor-pointer">
+                    Update Password
+                  </DropdownMenuItem>
+                </Link>
                 <BtnLogout />
               </DropdownMenuContent>
             </DropdownMenu>

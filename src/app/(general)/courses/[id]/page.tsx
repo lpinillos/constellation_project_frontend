@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/table";
 import { IUser } from '@/interfaces/user.interface';
 import { useParams } from 'next/navigation';
+import ActivityForm from '@/components/forms/ActivityForm';
+import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
+import UploadStudentsForm from '@/components/forms/UploadStudentsForm';
 
 interface StudentModalProps {
     open: boolean;
@@ -30,7 +33,7 @@ function StudentModal({ open, onClose, students }: StudentModalProps) {
                 <DialogHeader>
                     <DialogTitle className="text-3xl">Students</DialogTitle>
                 </DialogHeader>
-                <DialogDescription className="space-y-2">
+                <DialogDescription className="space-y-2" asChild>
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -74,6 +77,8 @@ export default function CoursesView() {
     const [isStudentModalOpen, setStudentModalOpen] = useState(false);
     const [course, setCourse] = useState<ICourse>();
     const [users, setUsers] = useState<IUser[]>([]);
+    const { user } = useCurrentUser();
+    const isProfessor = user?.role === "teacher";
 
     const params = useParams();
     const id = params.id as string;
@@ -117,7 +122,10 @@ export default function CoursesView() {
             </div>
 
             <div className="p-8 space-y-6">
-                <h1 className="text-3xl font-bold text-primary">{course?.name}</h1>
+                <div className='w-full flex justify-between items-center'>
+                    <h1 className="text-3xl font-bold text-primary">{course?.name}</h1>
+                    <UploadStudentsForm idCourse={id} />
+                </div>
 
                 <div className="w-full h-px bg-gray-500 my-4" />
 
@@ -134,8 +142,10 @@ export default function CoursesView() {
                     {course?.description}
                 </p>
 
-                <h2 className="text-2xl font-semibold text-primary ">Activities</h2>
-
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-semibold text-primary">Activities</h2>
+                    {isProfessor && <ActivityForm idCourse={id} />}
+                </div>
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -147,12 +157,13 @@ export default function CoursesView() {
                     <TableBody>
                         {course && course?.activities.length > 0 ? (
                             course?.activities.map((activity, index) => (
-                                <TableRow key={activity.id} className="hover:cursor-pointer">
+                                <TableRow key={activity.id} className="hover:cursor-pointer" onClick={() => window.location.href = `/courses/${course.id}/activity/${activity.id}`}>
                                     <TableCell>{index + 1}</TableCell>
                                     <TableCell>{activity.name}</TableCell>
                                     <TableCell>{activity.description}</TableCell>
                                 </TableRow>
                             ))
+
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={4} className="text-center">
@@ -163,10 +174,8 @@ export default function CoursesView() {
                     </TableBody>
                 </Table>
             </div>
-
+            
             <StudentModal open={isStudentModalOpen} onClose={() => setStudentModalOpen(false)} students={users?.map(user => user) || []} />
         </div>
     );
 }
-
-
