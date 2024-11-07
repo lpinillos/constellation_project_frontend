@@ -1,6 +1,7 @@
 export interface ICriteria {
-    id: string;
+    id: number;
     name: string;
     description: string;
-    percentage: number;
+    percentage: string;
+    activity?: string;
 }
