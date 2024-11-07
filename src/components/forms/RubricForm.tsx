@@ -33,7 +33,7 @@ interface Criterion {
 export default function RubricForm({ idActivity }: ActivityFormProps) {
   const [open, setOpen] = useState(false);
   const [criteria, setCriteria] = useState<ICriteria[]>([
-    { id: Date.now(), name: "", description: "", percentage: "" },
+    { id: Date.now()+"", name: "", description: "", percentage: "" },
   ]);
   const [nameRubric, setNameRubric] = useState("");
   const [rubric, setRubric] = useState<IRubric[]>();
@@ -65,7 +65,7 @@ export default function RubricForm({ idActivity }: ActivityFormProps) {
   const addCriterion = () => {
     setCriteria([
       ...criteria,
-      { id: Date.now(), name: "", description: "", percentage: "" },
+      { id: Date.now()+"", name: "", description: "", percentage: "" },
     ]);
   };
 

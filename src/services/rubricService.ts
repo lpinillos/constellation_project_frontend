@@ -1,7 +1,21 @@
-import { ICriteria } from '@/interfaces/criteria.interface';
-import axios from './index';
+import { IRubric } from "@/interfaces/rubric.interface";
+import axios from "./index";
 import Cookies from 'js-cookie';
-import { IRubric } from '@/interfaces/rubric.interface';
+import { ICriteria } from '@/interfaces/criteria.interface';
+
+export const getRubricById = async (rubricId: string): Promise<IRubric> => {
+    try {
+        const token = Cookies.get('token');
+        const response = await axios.get<IRubric>(`/rubric/${rubricId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }});
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return {} as IRubric;
+    }
+}
 
 export const getRubricByActivityId = async (activityId: string): Promise<IRubric[]> => {
     try {
@@ -17,6 +31,7 @@ export const getRubricByActivityId = async (activityId: string): Promise<IRubric
         return [{
             id: '',
             name: '',
+            criterias: [],
             activityId: '',
         }];
     }
