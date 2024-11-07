@@ -6,7 +6,6 @@ export interface IUser {
     name: string;
     last_name: string;
     email: string;
-    role: string;
     courses: ICourse[];
     role: string;
     skills: ISkill[];
