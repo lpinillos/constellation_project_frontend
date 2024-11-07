@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import Image from "next/image";
 import { ICourse } from '@/interfaces/course.interface';
-import { getCourseById, getUsersByCourse } from '@/services/courseService';
+import { generateTeams, getCourseById, getUsersByCourse } from '@/services/courseService';
 import {
     Table,
     TableBody,
@@ -109,6 +109,10 @@ export default function CoursesView() {
         fetchUsers();
     }, [id]);
 
+    const onClickGenerateTeams = async () => {
+        const response = await generateTeams(id);
+        console.log(response);
+    }
 
     return (
         <div className="min-h-screen text-white">
@@ -126,7 +130,10 @@ export default function CoursesView() {
             <div className="p-8 space-y-6">
                 <div className='w-full flex justify-between items-center'>
                     <h1 className="text-3xl font-bold text-primary">{course?.name}</h1>
-                    <UploadStudentsForm idCourse={id} />
+                    <div className='flex gap-5'>
+                        {isProfessor && <UploadStudentsForm idCourse={id} />}
+                        {isProfessor && <Button onClick={() => onClickGenerateTeams()} className="bg-transparent border border-primary">Generate teams</Button>}
+                    </div>
                 </div>
 
                 <div className="w-full h-px bg-gray-500 my-4" />

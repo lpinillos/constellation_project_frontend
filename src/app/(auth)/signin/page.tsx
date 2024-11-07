@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Link from "next/link";
 import type { Metadata } from "next";
 import LoginForm from "@/components/forms/LoginForm";
 
@@ -28,13 +27,13 @@ export default function Signin() {
       </CardContent>
       <CardFooter className="justify-center">
         <CardDescription>
-          Don&apos;t have an account?{" "}
-          <Link
+          {/* Don&apos;t have an account?{" "}
+          {/* <Link
             href="#"
             className="text-primary hover:text-primary/95 underline"
           >
             Sign up.
-          </Link>
+          </Link> */}
         </CardDescription>
       </CardFooter>
     </Card>

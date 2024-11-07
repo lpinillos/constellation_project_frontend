@@ -72,3 +72,18 @@ export const studentTeam = async (courseId: string, studentId: string): Promise<
         return [];
     }
 }
+
+export const generateTeams = async (courseId: string): Promise<ITeam[]> => {
+    try {
+        const token = Cookies.get('token');
+        const response = await axios.post(`/courses/teams/${courseId}`, {}, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
