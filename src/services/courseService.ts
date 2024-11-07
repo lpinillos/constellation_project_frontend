@@ -1,8 +1,8 @@
-
 import { ICourse } from "@/interfaces/course.interface";
 import axios from "./index";
 import Cookies from 'js-cookie';
 import { IUser } from "@/interfaces/user.interface";
+import { CreateCourse } from "@/interfaces/createCourse.interface";
 import { ITeam } from '@/interfaces/team.interface';
 
 
@@ -31,13 +31,31 @@ export const getUsersByCourse = async (courseId: string): Promise<IUser[]> => {
                 Authorization: `Bearer ${token}`
             }
         });
-
         return response.data;
 
     } catch (error) {
         console.error(error);
         return [];
     }
+}
+
+
+export async function createCourse(courseData: Partial<CreateCourse>) {
+    try {
+        const token = Cookies.get('token');
+
+        const response = await axios.post(`/courses`, courseData, {
+            headers: { 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        return response.data;
+    } catch {
+        throw new Error("Error creating course");
+    }
+
 }
 
 export const studentTeam = async (courseId: string, studentId: string): Promise<ITeam[]> => {
