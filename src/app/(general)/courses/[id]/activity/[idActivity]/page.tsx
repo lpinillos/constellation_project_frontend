@@ -185,7 +185,7 @@ export default function ActivityView() {
                     </TableCell>
                   </TableRow>
                 ))
-              ) : teamStudent.length > 0 ? (
+              ) : teamStudent ? (
                 teamStudent.map((team) => (
                   <TableRow key={team.id}>
                     <TableCell>

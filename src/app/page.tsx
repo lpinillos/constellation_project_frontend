@@ -20,7 +20,7 @@ export default function Home() {
             width={600}
             height={600}
             alt="logo"
-            className="w-full h-auto"
+            className="w-full h-auto rounded-t-md"
           />
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
@@ -35,13 +35,13 @@ export default function Home() {
         </CardContent>
         <CardFooter className="justify-center">
           <CardDescription>
-            Don&apos;t have an account?{" "}
+            {/* Don&apos;t have an account?{" "}
             <Link
               href="#"
               className="text-primary hover:text-primary/95 underline"
             >
               Sign up
-            </Link>
+            </Link> */}
           </CardDescription>
         </CardFooter>
       </Card>
