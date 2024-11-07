@@ -77,3 +77,18 @@ export const getStudentsSkills = async (userId: string): Promise<IUser[]> => {
     }
 }
 
+
+
+export const getUserByID = async (userId: string): Promise<IUser> => {
+    try {
+        const response = await axios.get<IUser>(`/auth/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('token')}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return {} as IUser;
+    }
+}
