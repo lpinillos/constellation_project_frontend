@@ -6,5 +6,5 @@ export interface IRubricGrade {
     grade: number;
     student: IUser;
     studentEval: IUser
-    rubric: IRubric;
+    rubric?: IRubric;
 }

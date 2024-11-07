@@ -29,6 +29,10 @@ import { findOne } from "@/services/activityService";
 import { IActivity } from "@/interfaces/activity.interface";
 import RubricForm from "@/components/forms/RubricForm";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { getRubricByActivityId } from "@/services/rubricService";
+import { IRubric } from "@/interfaces/rubric.interface";
+import StudentEvalForm from "@/components/forms/StudentEvalForm";
+// import StudentEvalForm from "@/components/forms/StudentEvalForm";
 
 export default function ActivityView() {
   const [teams, setTeams] = useState<ITeam[]>([]);
@@ -44,6 +48,7 @@ export default function ActivityView() {
   const params = useParams();
   const idActivity = params.idActivity as string;
   const idCourse = params.id as string;
+  const [rubric, setRubric] = useState<IRubric[]>();
 
   const [activity, setActivity] = useState<IActivity | null>(null);
 
@@ -59,6 +64,19 @@ export default function ActivityView() {
 
     fetchActivity();
   }, [idActivity]);
+
+  useEffect(() => {
+    try {
+      const fetchRubric = async () => {
+        const rubric = await getRubricByActivityId(idActivity);
+        setRubric(rubric);
+      };
+      fetchRubric();
+    } catch (error) {
+      console.error(error);
+    }
+  }, [idActivity]);
+
 
   // Inside the useEffect hook
   useEffect(() => {
@@ -160,8 +178,13 @@ export default function ActivityView() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{isProfessor ? "Members" : "Team Name"}</TableHead>
-                <TableHead>{isProfessor ? "Role" : "Members"}</TableHead>
+                <TableHead>{isProfessor ? "Members" : "Name"}</TableHead>
+                <TableHead>{isProfessor ? "Role" : "Skill"}</TableHead>
+                {rubric?.[0] ? (
+                  <TableHead>{isProfessor ? "Role" : "Evaluate"}</TableHead>
+                ) : (
+                  <></>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -185,7 +208,7 @@ export default function ActivityView() {
                     </TableCell>
                   </TableRow>
                 ))
-              ) : teamStudent.length > 0 ? (
+              ) : teamStudent ? (
                 teamStudent.map((team) => (
                   <TableRow key={team.id}>
                     <TableCell>
@@ -194,12 +217,19 @@ export default function ActivityView() {
                     <TableCell>
                       <p>
                         {studentSkills[team.id] &&
-                        studentSkills[team.id].length > 0
+                          studentSkills[team.id].length > 0
                           ? (studentSkills[team.id] || [])
-                              .map((skill) => skill.name)
-                              .join(", ")
+                            .map((skill) => skill.name)
+                            .join(", ")
                           : "None"}
                       </p>
+                    </TableCell>
+                    <TableCell>
+                      {rubric?.[0] ? (
+                        <StudentEvalForm rubricId={rubric[0].id} idStu={user?.user_id} idStuEval={team.id} />
+                      ) : (
+                        <></>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))

@@ -11,7 +11,7 @@ export interface ICriteriaGrade {
 
 export interface ICriteriaGradeSend {
     grade: number;
-    student: string;
-    studentEval: string
-    criteria: string;
+    student?: string;
+    studentEval?: string
+    criteria?: string;
 }

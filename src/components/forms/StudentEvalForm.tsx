@@ -16,33 +16,31 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 
+interface StudentEvalFormProps {
+    rubricId?: string;
+    idStu?: string;
+    idStuEval?: string;
+}
 
-export default function StudentEvalForm() {
+export default function StudentEvalForm({rubricId, idStu, idStuEval}: StudentEvalFormProps) {
 
     const [open, setOpen] = useState(false);
 
     const [rubric, setRubric] = useState<IRubric>();
 
-    // const params = useParams();
-    // const id = params.id as string;
-
-    const id = "b5587593-b1d2-4238-999b-e40042cd72a7";
-    const idstu = "19cadee7-54dd-48d7-983b-0d083beed3cd";
-    const idestueval = "740b2139-44f4-4fa3-b8da-18ce5cbfe5e5";
-
     useEffect(() => {
         const fetchRubric = async () => {
             try {
-                const rubricData = await getRubricById(id);
-                setRubric(rubricData);
+                if (rubricId) {
+                    const rubricData = await getRubricById(rubricId);
+                    setRubric(rubricData);
+                }
             } catch (err) {
                 console.error(err);
             }
         };
         fetchRubric();
-    }, [id]);
-
-
+    }, [rubricId]);
 
     const handleOnSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -51,8 +49,8 @@ export default function StudentEvalForm() {
         const criterias: ICriteriaGradeSend[] = rubric?.criterias?.map((criteria, index) => ({
             criteria: criteria.id,
             grade: Number(formData.get(`grades${index}`)),
-            student: idstu,
-            studentEval: idestueval
+            student: idStu,
+            studentEval: idStuEval
         })) || [];
 
         sendCriteriaGrade(criterias);
@@ -73,7 +71,7 @@ export default function StudentEvalForm() {
                         </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleOnSubmit} className='flex flex-col gap-4'>
-                        {rubric?.criterias.map((criteria, index) => (
+                        {rubric?.criterias?.map((criteria, index) => (
                             <div key={index} className="grid w-full items-center gap-1.5">
                                 <Accordion type="single" collapsible className="w-full ">
                                     <AccordionItem className='border-none' value={`criteria-description-${index}`}>

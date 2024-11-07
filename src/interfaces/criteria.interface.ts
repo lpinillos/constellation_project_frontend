@@ -1,5 +1,5 @@
 export interface ICriteria {
-    id: number;
+    id?: string;
     name: string;
     description: string;
     percentage: string;
