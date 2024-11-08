@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import Signin from '../app/(auth)/signin/page';
-import LoginForm from '@/components/forms/LoginForm';
 
 jest.mock('../components/forms/LoginForm', () => jest.fn(() => <div>LoginForm Component</div>));
 
