@@ -9,5 +9,9 @@ jobs:
       - uses: actions/setup-node@v2
       - name: Install packages
         run: npm install --force
+      - name: Run Playwright tests
+        run: npx playwright test
+      - name: Run Jest tests
+        run: npm run test
       - name: Bundle
         run: npm run build
