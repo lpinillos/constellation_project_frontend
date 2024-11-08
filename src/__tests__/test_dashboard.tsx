@@ -1,8 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import DashboardPage from '@/app/(general)/dashboard/page';
-import CardDashboard from '@/components/ui/dashboard-cards';
-import { DashboardCarousel } from '@/components/ui/dashboard-carousel';
-import DashboardTable from '@/components/ui/dashboard-table';
 
 // Mock de componentes
 jest.mock('../components/ui/dashboard-cards', () => jest.fn(() => <div>CardDashboard Component</div>));
